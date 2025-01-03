@@ -2,7 +2,7 @@
 
 # Version python
 
-python --version
+python --version <br>
 Python 3.10.12
 
 
