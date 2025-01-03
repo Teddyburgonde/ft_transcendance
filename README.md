@@ -1,5 +1,11 @@
 # ft_transcendance
 
+# Version python
+
+python --version
+Python 3.10.12
+
+
 ## FRONT
 
 ## Les différentes méthodes :
