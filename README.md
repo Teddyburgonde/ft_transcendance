@@ -83,7 +83,7 @@ services:
 
 ## Serialization
 Converti une class en format JSON comme <br>
-ça la base de doonnee comprends les requettes.
+ça la base de donnée comprends les requettes.
 
 
 ```py
