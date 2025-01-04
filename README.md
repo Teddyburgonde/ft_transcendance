@@ -79,9 +79,12 @@ services:
       POSTGRES_DB: mydb
 ```
 
-## Back
+# Back
 
-Serialization
+## Serialization
+Converti une class en format JSON comme <br>
+ça la base de doonnee comprends les requettes.
+
 
 ```py
 fron rest_frameworkd import serializers
