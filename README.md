@@ -1,9 +1,83 @@
 # ft_transcendance
 
-# Version python
+## Version python
 
 python --version <br>
 Python 3.10.12
+
+# Docker
+
+Dockerfile pour Django 
+
+```c
+FROM python:3.10-slim
+
+# Installer les dépendances
+WORKDIR /app
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copier le code Django
+COPY . /app/
+
+# Lancer Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
+```
+
+Dockerfile pour Nginx
+
+```c
+FROM nginx:alpine
+
+# Copier la configuration Nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+```
+
+
+nginx.conf (a revoir je pense qu'il peut avoir des erreurs ) <br>
+
+```c
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://web:8000;  # Le container Gunicorn
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+docker-compose.yml
+```c
+version: '3.8'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+```
 
 
 ## FRONT
