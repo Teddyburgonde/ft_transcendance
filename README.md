@@ -166,6 +166,8 @@ fetch('https://api.example.com/data/1', {
   .catch(error => console.error('Erreur lors du DELETE :', error));
 ```
 
+# Base de donnée
+
 ## Creation d'une base de donnée (PostgreSql)
 
 Installer postgresql puis : 
