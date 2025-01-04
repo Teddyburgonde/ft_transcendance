@@ -79,6 +79,21 @@ services:
       POSTGRES_DB: mydb
 ```
 
+## Back
+
+Serialization
+
+```py
+fron rest_frameworkd import serializers
+front .models import Eleve
+
+class EleveSerializer(serializers.ModelSerializer): 
+  class Meta:
+    model = Eleve 
+    fields = ["id", "title", "content"]
+```
+
+
 
 ## FRONT
 
