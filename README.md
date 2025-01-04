@@ -170,7 +170,7 @@ fetch('https://api.example.com/data/1', {
 
 ## Creation d'une base de donnée (PostgreSql)
 
-Installer postgresql puis : 
+Installer PostgreSql puis : 
 ```c
 sudo service postgresql start
 sudo -u postgres psql
