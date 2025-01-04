@@ -165,3 +165,38 @@ fetch('https://api.example.com/data/1', {
   })
   .catch(error => console.error('Erreur lors du DELETE :', error));
 ```
+
+## Creation d'une base de donnée (PostgreSql)
+
+Installer postgresql puis : 
+```c
+sudo service postgresql start
+sudo -u postgres psql
+CREATE DATABASE mydatabase;
+CREATE USER myuser WITH PASSWORD 'mypassword';
+GRANT ALL PRIVILEGES ON DATABASE mydatabase TO myuser;
+```
+
+##  Exporter la base de données et l'importer chez toi
+
+Crée un fichier mydatabase_dump.sql contentant toutes les données et la structure de ta base.
+
+```c
+pg_dump -U myuser -d mydatabase > mydatabase_dump.sql
+```
+Met ce fichier sur ton ordinateur chez toi puis
+créer une base vide avec :
+```c
+CREATE DATABASE mydatabase;
+```
+
+Creer une utilisateur (si necessaire).
+```c
+CREATE USER myuser WITH PASSWORD 'mypassword';
+GRANT ALL PRIVILEGES ON DATABASE mydatabase TO myuser;
+```
+
+puis restaure la sauvegarde :
+```c
+psql -U myuser -d mydatabase < mydatabase_dump.sql
+```
