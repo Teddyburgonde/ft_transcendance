@@ -7,22 +7,97 @@ Python 3.10.12
 
 # Docker
 
-Dockerfile pour Django 
+1. Ajouter un Dockerfile a ton projet Django.
+Dockerfile pour Django : 
 
 ```c
-FROM python:3.10-slim
+# syntax=docker/dockerfile:1.4
 
-# Installer les dépendances
-WORKDIR /app
-COPY requirements.txt /app/
+FROM --platform=$BUILDPLATFORM python:3.10-alpine AS builder
+EXPOSE 8000
+WORKDIR /app 
+# Install system dependencies
+RUN apk update
+RUN apk add \
+    pkgconfig \
+    gcc \
+    musl-dev \
+    bash \
+    mariadb-dev
+
+# Install any needed packages specified in requirements.txt
+COPY requirements.txt /app
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier le code Django
-COPY . /app/
-
-# Lancer Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
+# Copy the current directory contents into the container at /usr/src/app
+COPY . /app
+# Run server
+ENTRYPOINT [ "python3"]
+CMD ["manage.py", "runserver", "0.0.0.0:8000"]
 ```
+
+2. Créer une image Docker
+
+Tape dans ton terminal 
+```c
+docker build -t mon-projet .
+```
+Une fois terminé, tu obtiens une image nommée mon-projet.
+
+3. Verifier l'image construite
+
+Tape dans ton terminal 
+```c
+docker images
+```
+Tu devrais voir une ligne ressemblant a ceci : 
+
+```c
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+mon-projet      latest    <IMAGE_ID>     <SOME_TIME>      <SIZE>
+```
+
+lamcer un conteneur a partir de l'image :
+
+```c
+docker run -d -p 8000:8000 mon-projet
+```
+
+Lancer le localhost 
+
+```c
+http://localhost:8000
+```
+
+Et admirer votre site =) 
+
+
+Envoyer l'image a un collegue 
+
+Sur ton ordinateur tape dans le terminal :
+
+```c
+docker save -o mon-projet.tar mon-projet
+```
+
+Envoie a ton collegue le fichier generer.
+
+Sur son ordinateur il doit taper : 
+```c
+docker load -i mon-projet.tar
+```
+
+Puis il peut lancer : 
+```c
+docker run -d -p 8000:8000 mon-projet
+```
+
+Et il se connectera sur : 
+
+```c
+http://localhost:8000
+```
+
 
 Dockerfile pour Nginx
 
@@ -32,7 +107,6 @@ FROM nginx:alpine
 # Copier la configuration Nginx
 COPY nginx.conf /etc/nginx/nginx.conf
 ```
-
 
 nginx.conf (a revoir je pense qu'il peut avoir des erreurs ) <br>
 
