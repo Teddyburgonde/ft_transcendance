@@ -7,7 +7,7 @@ Python 3.10.12
 
 # Docker
 
-1. Ajouter un Dockerfile a ton projet Django.
+**1. Ajouter un Dockerfile a ton projet Django.**
 Dockerfile pour Django : 
 
 ```c
@@ -36,7 +36,7 @@ ENTRYPOINT [ "python3"]
 CMD ["manage.py", "runserver", "0.0.0.0:8000"]
 ```
 
-2. Créer une image Docker
+**2. Créer une image Docker**
 
 Tape dans ton terminal 
 ```c
@@ -44,9 +44,9 @@ docker build -t mon-projet .
 ```
 Une fois terminé, tu obtiens une image nommée mon-projet.
 
-3. Verifier l'image construite
+**3. Verifier l'image construite**
 
-Tape dans ton terminal 
+Tape dans ton terminal :
 ```c
 docker images
 ```
@@ -57,22 +57,22 @@ REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
 mon-projet      latest    <IMAGE_ID>     <SOME_TIME>      <SIZE>
 ```
 
-lamcer un conteneur a partir de l'image :
+**4. lancer un conteneur a partir de l'image :**
 
 ```c
 docker run -d -p 8000:8000 mon-projet
 ```
 
-Lancer le localhost 
+**5. Lancer le localhost 
 
 ```c
 http://localhost:8000
 ```
 
-Et admirer votre site =) 
+** 6.Et admirer votre site =)** 
 
 
-Envoyer l'image a un collegue 
+**Envoyer l'image a un collegue** 
 
 Sur ton ordinateur tape dans le terminal :
 
@@ -80,19 +80,19 @@ Sur ton ordinateur tape dans le terminal :
 docker save -o mon-projet.tar mon-projet
 ```
 
-Envoie a ton collegue le fichier generer.
+**Envoie a ton collegue le fichier generer.**
 
 Sur son ordinateur il doit taper : 
 ```c
 docker load -i mon-projet.tar
 ```
 
-Puis il peut lancer : 
+**Puis il peut lancer :** 
 ```c
 docker run -d -p 8000:8000 mon-projet
 ```
 
-Et il se connectera sur : 
+**Et il se connectera sur :** 
 
 ```c
 http://localhost:8000
