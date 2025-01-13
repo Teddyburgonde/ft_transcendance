@@ -16,7 +16,9 @@ Including another URLconf
 """
 
 from django.urls import path, include
+from django.http import HttpResponse
 
 urlpatterns = [
-    path("", include("api.urls")),
+    path("", lambda request: HttpResponse("Bienvenue sur l'API Transcendance !")),
+    path("users/", include("api.urls")),
 ]
