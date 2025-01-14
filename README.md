@@ -5,6 +5,26 @@
 python --version <br>
 Python 3.10.12
 
+## Faire une migration
+
+Une migration permet de mettre a jour ta base de donnée par rapport a ton model. 
+Si dans ton model tu modifie un champ tu dois tout de suite faire une migration.
+Par exemple dans ton model tu ajoues un nickname , la base de donnée lui il n'a pas connaissance de ce nouveau ajout donc on doit faire une migration.
+
+```c
+python3 manage.py makemigrations
+python manage.py migrate
+```
+
+# Lancer un server
+
+python manage.py runserver
+
+
+# Aller sur Django Rest framework 
+
+http://127.0.0.1:8000/users/
+
 # Docker
 
 **1. Ajouter un Dockerfile a ton projet Django.**
