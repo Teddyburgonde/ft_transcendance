@@ -1,11 +1,8 @@
 
 from django.urls import path, include
-from django.http import HttpResponse
-from api.views import UserRetrieveUpdateDestroy 
+from django.contrib import admin
 
 urlpatterns = [
-    path("users/", include("api.urls")),
-    path("users/<int:pk>/", UserRetrieveUpdateDestroy.as_view(), 
-    name="update"
-    ),
+    path('admin/', admin.site.urls),
+    path('users/', include('api.urls')),
 ]
