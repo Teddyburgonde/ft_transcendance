@@ -20,6 +20,11 @@ python manage.py migrate
 
 python manage.py runserver
 
+
+# Aller sur Django Rest framework 
+
+http://127.0.0.1:8000/users/
+
 # Docker
 
 **1. Ajouter un Dockerfile a ton projet Django.**
