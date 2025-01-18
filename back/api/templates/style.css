@@ -1,0 +1,7 @@
+body 
+{
+    background-image: url('silco.gif'); /* Chemin vers l'image */
+    background-size: cover; /* Ajuste l'image pour couvrir tout l'écran */
+    background-position: center; /* Centre l'image */
+    background-repeat: no-repeat; /* Évite la répétition de l'image */
+}
