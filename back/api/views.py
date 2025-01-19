@@ -7,7 +7,6 @@ from django.shortcuts import get_object_or_404
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
 
 
 class UserListCreate(generics.ListCreateAPIView):
@@ -29,7 +28,6 @@ class UserListCreate(generics.ListCreateAPIView):
 		User.objects.all().delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 	"""
 	Gère :
@@ -41,7 +39,6 @@ class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = UserSerializer
 	lookup_field = "pk"
 
-@method_decorator(csrf_exempt, name='dispatch')
 class CheckDataView(View):
 	def post(self, request):
 		nickname = request.POST.get('nickname')

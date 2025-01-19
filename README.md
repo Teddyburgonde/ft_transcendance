@@ -296,3 +296,131 @@ puis restaure la sauvegarde :
 ```c
 psql -U myuser -d mydatabase < mydatabase_dump.sql
 ```
+
+# Front 
+
+## Creation d'un formulaire en 5 étapes 
+
+1. Cree un formulaire 
+
+Ceci est un formulaire qui est dans une card (La card c'est uniquement pour le design). <br> 
+il y a 3 champs important : Le label Nickmame , le label Password , et la methode POST <br>
+
+```html
+<div class="container-fluid d-flex justify-content-center align-items-center vh-100">
+	  <!-- Centered Card -->
+	  <div class="card" style="width: 24rem;">
+		<div class="card-body">
+		  <h5 class="card-title text-center">Login</h5>
+		  <form id="login-form" method="POST" action="http://127.0.0.1:8080/users/check/">
+			<div class="mb-3">
+			  <label for="formGroupExampleInput" class="form-label">Nickname</label>
+			  <input type="text" class="form-control" id="formGroupExampleInput" name="nickname">
+			</div>
+			<div class="mb-3">
+			  <label for="exampleInputPassword1" class="form-label">Password</label>
+			  <input type="password" class="form-control" id="exampleInputPassword1" name="password">
+			</div>
+			<div class="mb-3 form-check">
+			  <input type="checkbox" class="form-check-input" id="exampleCheck1">
+			  <label class="form-check-label" for="exampleCheck1">Remember me</label>
+			</div>
+			<button type="submit" class="btn btn-primary w-100">Submit</button>
+		  </form>
+		</div>
+	  </div>
+	</div>
+```
+Ce formulaire utilise une requete POST : <br>
+Le client envoie une requête POST, cette requête arrive à l'URL,<br>
+qui est un endpoint de l'API. Le backend vérifie si les données<br>
+envoyées correspondent à celles déjà présentes dans la base de <br>
+données. Si oui, il retourne une réponse comme "Connexion réussie".<br>
+
+
+2. Configuration des URLS 
+
+Étape 2 : Configuration des URLs
+
+Ajouté une route dans urls.py pour afficher le formulaire via une vue index. <br>
+
+```python
+from django.urls import path
+from .views import index
+
+urlpatterns = [
+
+path('', index, name='index'),
+
+]
+```
+
+Une autre route pour la vérification des données via le backend. <br>
+
+```python
+from django.urls import path
+from .views import CheckDataView
+
+urlpatterns = [
+
+path('check/', CheckDataView.as_view(), name='check_data'),
+
+]
+```
+
+Relation entre les deux : 
+- Une pour afficher le formulaire (index).
+- Une pour traiter les données envoyées (check).
+
+3. Création des vues Django
+
+- Dans views.py , definir une vue pour afficher le formulaire 
+
+```python
+
+def index(request):
+    return render(request, 'index.html')
+```
+
+- Dans views.py , definir une vue pour récupérer les données envoyées par le formulaire et les comparer à celles de la base de données.
+
+```python 
+class CheckDataView(View):
+	def post(self, request):
+		nickname = request.POST.get('nickname')
+		password = request.POST.get('password')
+		try:
+			user = User.objects.get(nickname=nickname)
+			if user.password == password:  # À sécuriser avec un hachage
+				return JsonResponse({"status": "success", "message": "Connexion réussie"})
+			else:
+				return JsonResponse({"status": "error", "message": "Mot de passe incorrect"})
+		except User.DoesNotExist:
+			return JsonResponse({"status": "error", "message": "Utilisateur introuvable"})
+```
+4. Etape liaison entre le formulaire et le backend 
+
+<form id="login-form" method="POST" action="http://127.0.0.1:8080/users/check/">
+
+5. Gestion des réponses 
+
+dans views.py 
+
+```python
+return JsonResponse({"status": "success", "message": "Connexion réussie"})
+return JsonResponse({"status": "error", "message": "Mot de passe incorrect"})
+return JsonResponse({"status": "error", "message": "Utilisateur introuvable"})
+```
+# Jeton CSRF pour proteger le back end
+
+1. Ajoute de la balise jeton  
+Dans le formulaire rajouter
+
+```html
+<form id="login-form" method="POST" action="http://127.0.0.1:8080/users/check/">
+{% csrf_token %} #Le jeton 
+<div class="mb-3">
+```
+
+
+

@@ -30,7 +30,7 @@
 		<div class="card-body">
 		  <h5 class="card-title text-center">Login</h5>
 		  <form id="login-form" method="POST" action="http://127.0.0.1:8080/users/check/">
-			
+			{% csrf_token %}
 			<div class="mb-3">
 			  <label for="formGroupExampleInput" class="form-label">Nickname</label>
 			  <input type="text" class="form-control" id="formGroupExampleInput" name="nickname">
