@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('users/', include('api.urls')),
+	path('admin/', admin.site.urls),
+	#path('users/', include('api.urls')),
+	path('', include('api.urls')),
 ]

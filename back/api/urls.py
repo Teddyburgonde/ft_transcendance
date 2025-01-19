@@ -1,5 +1,6 @@
+from django.shortcuts import redirect
 from django.urls import path
-from .views import UserListCreate, UserRetrieveUpdateDestroy , CheckDataView, index
+from .views import UserListCreate, redirect_to_intra, UserRetrieveUpdateDestroy , CheckDataView, index
 
 urlpatterns = [
 
@@ -16,4 +17,7 @@ urlpatterns = [
     
     # Vérifie les identifiants utilisateur
     path('check/', CheckDataView.as_view(), name='check_data'),  
+    path('auth/callback/', CheckDataView.as_view(), name='auth_callback'),
+    path('users/check/', CheckDataView.as_view(), name='check_data'),
+    path('auth/intra/', redirect_to_intra, name='redirect_to_intra'),
 ]
