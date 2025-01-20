@@ -9,7 +9,9 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from decouple import config
+from django.utils.translation import get_language
 import requests 
+
 
 
 CLIENT_ID = config("INTRA_CLIENT_ID")
@@ -88,4 +90,5 @@ class CheckDataView(View):
 			return JsonResponse({"status": "error", "message": "Utilisateur introuvable"})
 
 def index(request):
-    return render(request, 'index.html')
+	current_language = get_language()  # Récupère la langue active
+	return render(request, 'index.html', {'LANGUAGE_CODE': current_language})

@@ -39,11 +39,11 @@ WORKDIR /app
 # Install system dependencies
 RUN apk update
 RUN apk add \
-    pkgconfig \
-    gcc \
-    musl-dev \
-    bash \
-    mariadb-dev
+	pkgconfig \
+	gcc \
+	musl-dev \
+	bash \
+	mariadb-dev
 
 # Install any needed packages specified in requirements.txt
 COPY requirements.txt /app
@@ -132,14 +132,14 @@ nginx.conf (a revoir je pense qu'il peut avoir des erreurs ) <br>
 
 ```c
 server {
-    listen 80;
+	listen 80;
 
-    location / {
-        proxy_pass http://web:8000;  # Le container Gunicorn
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
+	location / {
+		proxy_pass http://web:8000;  # Le container Gunicorn
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	}
 }
 ```
 
@@ -148,29 +148,29 @@ docker-compose.yml
 version: '3.8'
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
+	build:
+	  context: .
+	  dockerfile: Dockerfile
+	ports:
+	  - "8000:8000"
+	depends_on:
+	  - db
 
   nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
-    ports:
-      - "80:80"
-    depends_on:
-      - web
+	build:
+	  context: .
+	  dockerfile: Dockerfile.nginx
+	ports:
+	  - "80:80"
+	depends_on:
+	  - web
 
   db:
-    image: postgres:14
-    environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydb
+	image: postgres:14
+	environment:
+	  POSTGRES_USER: myuser
+	  POSTGRES_PASSWORD: mypassword
+	  POSTGRES_DB: mydb
 ```
 
 # Back
@@ -186,8 +186,8 @@ front .models import Eleve
 
 class EleveSerializer(serializers.ModelSerializer): 
   class Meta:
-    model = Eleve 
-    fields = ["id", "title", "content"]
+	model = Eleve 
+	fields = ["id", "title", "content"]
 ```
 
 
@@ -218,7 +218,7 @@ fetch('https://api.example.com/data')
 fetch('https://api.example.com/data', {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json',
+	'Content-Type': 'application/json',
   },
   body: JSON.stringify({ key: 'value' }), // Données envoyées au serveur
 })
@@ -234,7 +234,7 @@ fetch('https://api.example.com/data', {
 fetch('https://api.example.com/data/1', {
   method: 'PUT',
   headers: {
-    'Content-Type': 'application/json',
+	'Content-Type': 'application/json',
   },
   body: JSON.stringify({ key: 'newValue' }), // Données mises à jour
 })
@@ -251,11 +251,11 @@ fetch('https://api.example.com/data/1', {
   method: 'DELETE',
 })
   .then(response => {
-    if (response.ok) {
-      console.log('Ressource supprimée avec succès');
-    } else {
-      console.error('Erreur lors de la suppression');
-    }
+	if (response.ok) {
+	  console.log('Ressource supprimée avec succès');
+	} else {
+	  console.error('Erreur lors de la suppression');
+	}
   })
   .catch(error => console.error('Erreur lors du DELETE :', error));
 ```
@@ -308,28 +308,28 @@ il y a 3 champs important : Le label Nickmame , le label Password , et la method
 
 ```html
 <div class="container-fluid d-flex justify-content-center align-items-center vh-100">
-	  <!-- Centered Card -->
-	  <div class="card" style="width: 24rem;">
-		<div class="card-body">
-		  <h5 class="card-title text-center">Login</h5>
-		  <form id="login-form" method="POST" action="http://127.0.0.1:8080/users/check/">
-			<div class="mb-3">
-			  <label for="formGroupExampleInput" class="form-label">Nickname</label>
-			  <input type="text" class="form-control" id="formGroupExampleInput" name="nickname">
-			</div>
-			<div class="mb-3">
-			  <label for="exampleInputPassword1" class="form-label">Password</label>
-			  <input type="password" class="form-control" id="exampleInputPassword1" name="password">
-			</div>
-			<div class="mb-3 form-check">
-			  <input type="checkbox" class="form-check-input" id="exampleCheck1">
-			  <label class="form-check-label" for="exampleCheck1">Remember me</label>
-			</div>
-			<button type="submit" class="btn btn-primary w-100">Submit</button>
-		  </form>
-		</div>
+	<!-- Centered Card -->
+	<div class="card" style="width: 24rem;">
+	<div class="card-body">
+	  <h5 class="card-title text-center">Login</h5>
+	  <form id="login-form" method="POST" action="http://127.0.0.1:8080/users/check/">
+	  <div class="mb-3">
+		<label for="formGroupExampleInput" class="form-label">Nickname</label>
+		<input type="text" class="form-control" id="formGroupExampleInput" name="nickname">
 	  </div>
+	  <div class="mb-3">
+		<label for="exampleInputPassword1" class="form-label">Password</label>
+		<input type="password" class="form-control" id="exampleInputPassword1" name="password">
+	  </div>
+	  <div class="mb-3 form-check">
+		<input type="checkbox" class="form-check-input" id="exampleCheck1">
+		<label class="form-check-label" for="exampleCheck1">Remember me</label>
+	  </div>
+	  <button type="submit" class="btn btn-primary w-100">Submit</button>
+	  </form>
 	</div>
+	</div>
+  </div>
 ```
 Ce formulaire utilise une requete POST : <br>
 Le client envoie une requête POST, cette requête arrive à l'URL,<br>
@@ -379,24 +379,24 @@ Relation entre les deux :
 ```python
 
 def index(request):
-    return render(request, 'index.html')
+	return render(request, 'index.html')
 ```
 
 - Dans views.py , definir une vue pour récupérer les données envoyées par le formulaire et les comparer à celles de la base de données.
 
 ```python 
 class CheckDataView(View):
-	def post(self, request):
-		nickname = request.POST.get('nickname')
-		password = request.POST.get('password')
-		try:
-			user = User.objects.get(nickname=nickname)
-			if user.password == password:  # À sécuriser avec un hachage
-				return JsonResponse({"status": "success", "message": "Connexion réussie"})
-			else:
-				return JsonResponse({"status": "error", "message": "Mot de passe incorrect"})
-		except User.DoesNotExist:
-			return JsonResponse({"status": "error", "message": "Utilisateur introuvable"})
+  def post(self, request):
+	nickname = request.POST.get('nickname')
+	password = request.POST.get('password')
+	try:
+	  user = User.objects.get(nickname=nickname)
+	  if user.password == password:  # À sécuriser avec un hachage
+		return JsonResponse({"status": "success", "message": "Connexion réussie"})
+	  else:
+		return JsonResponse({"status": "error", "message": "Mot de passe incorrect"})
+	except User.DoesNotExist:
+	  return JsonResponse({"status": "error", "message": "Utilisateur introuvable"})
 ```
 4. Etape liaison entre le formulaire et le backend 
 
@@ -422,5 +422,77 @@ Dans le formulaire rajouter
 <div class="mb-3">
 ```
 
+# Rendre son site bilingue
 
+1. Activer le système de traduction dans settings.py.
+Dans settings.py 
+
+```python
+LANGUAGE_CODE = 'en'  # Langue par défaut
+USE_I18N = True  # Active les traductions
+LANGUAGES = [
+	('en', 'English'),
+	('fr', 'Français'),
+]
+```
+
+2. Ajouter LocaleMiddleware dans les middlewares. 
+Dans settings py
+
+```python
+MIDDLEWARE = [
+	'django.middleware.locale.LocaleMiddleware',  
+]
+```
+
+
+3. Configurer les chemins des fichiers de traduction (facultatif)
+
+```python
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+```
+
+3. Marquer les textes à traduire dans les templates et le backend ({% trans %} et _()).
+
+```html
+<a class="navbar-brand mx-auto" href="#">{% trans "Welcome" %}</a>
+```
+
+4. Générer les fichiers de traduction avec makemessages. 
+
+Dans le terminal 
+
+```c
+django-admin makemessages -l fr
+```
+Cela crée un fichier de traduction pour le français dans locale/fr/LC_MESSAGES/django.po.
+
+5. Remplir les traductions dans les fichiers .po.
+
+```c
+msgid "Welcome"
+msgstr "Bienvenue"
+```
+6. Compiler les fichiers de traduction avec compilemessages.
+
+```c
+django-admin compilemessages
+```
+
+7. Ajouter un sélecteur de langue dans les templates.
+
+dans urls.py 
+
+from django.conf.urls.i18n import i18n_patterns
+
+```python
+urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),  # Gestion de la langue
+]
+```
+
+8. Configurer les URL pour le changement de langue.
+9. Tester le fonctionnement bilingue sur le site.
 
