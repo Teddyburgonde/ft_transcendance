@@ -122,6 +122,7 @@ USE_I18N = True
 LANGUAGES = [
 	('en', 'English'),
 	('fr', 'Français'),
+	('es', 'Español'),
 ]
 
 TIME_ZONE = 'UTC'
