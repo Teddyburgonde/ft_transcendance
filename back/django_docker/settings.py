@@ -39,6 +39,11 @@ INSTALLED_APPS = [
 	'django.contrib.staticfiles',
 	"api",
 	"rest_framework",
+	'django_otp',
+	'django_otp.plugins.otp_static',
+	'django_otp.plugins.otp_totp',
+	'two_factor',
+	'qrcode',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +148,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+AUTHENTICATION_BACKENDS = (
+    'django_otp.backends.OTPModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
