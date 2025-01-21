@@ -456,6 +456,12 @@ LOCALE_PATHS = [
 
 3. Marquer les textes à traduire dans les templates et le backend ({% trans %} et _()).
 
+Ajouté ceci tout en haut de votre page html 
+
+```html
+{% load i18n %}
+```
+
 ```html
 <a class="navbar-brand mx-auto" href="#">{% trans "Welcome" %}</a>
 ```
@@ -493,6 +499,4 @@ urlpatterns = [
 ]
 ```
 
-8. Configurer les URL pour le changement de langue.
-9. Tester le fonctionnement bilingue sur le site.
 
