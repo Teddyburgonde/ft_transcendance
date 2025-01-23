@@ -28,6 +28,20 @@ DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
+import os
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Django Two-Factor Auth Configuration
+TWO_FACTOR_AUTHENTICATION_METHODS = (
+    'two_factor.plugins.phonenumber',
+)
+
+LOGIN_REDIRECT_URL = '/enable-2fa/'
+
+# Configuration du backend pour la génération du QR code
+TWO_FACTOR_QR_CODE_URL = 'http://example.com/qr/{0}/'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,8 +51,15 @@ INSTALLED_APPS = [
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
-	"api",
-	"rest_framework",
+	'django_docker', 
+	'api',
+	'rest_framework',
+	'django_otp',
+	'django_otp.plugins.otp_totp',
+	'django_otp.plugins.otp_static',
+	'two_factor',
+	'qrcode',
+	'two_factor.plugins.phonenumber', 
 ]
 
 MIDDLEWARE = [
@@ -50,7 +71,10 @@ MIDDLEWARE = [
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'django_otp.middleware.OTPMiddleware',
 ]
+
+TWO_FACTOR_PATCH_ADMIN = False
 
 CSRF_TRUSTED_ORIGINS = [
 	"http://127.0.0.1:5500",

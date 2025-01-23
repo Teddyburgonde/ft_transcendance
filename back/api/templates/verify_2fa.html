@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify 2FA</title>
+</head>
+<body>
+    <h1>Enter the code from your Authenticator app</h1>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="token">Verification Code</label>
+        <input type="text" id="token" name="token" required>
+        <button type="submit">Verify</button>
+    </form>
+</body>
+</html>
