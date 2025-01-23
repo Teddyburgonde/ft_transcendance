@@ -16,6 +16,7 @@ import qrcode
 from io import BytesIO 
 from django.core.files.storage import default_storage 
 from django.core.files.base import ContentFile
+from django.contrib import messages
 
 CLIENT_ID = config("INTRA_CLIENT_ID")
 CLIENT_SECRET = config("INTRA_CLIENT_SECRET")
@@ -31,17 +32,20 @@ def redirect_to_intra(request):
 def verify_2fa(request):
     if request.method == 'POST':
         token = request.POST.get('token')  # Le code 2FA entré par l'utilisateur
-        user = request.user
+        user = request.user  # L'utilisateur actuellement connecté
         
-        # Vérifie si le code est valide
+        # Récupère l'appareil TOTP de l'utilisateur
         totp_device = TOTPDevice.objects.get(user=user)
+
+        # Vérifie si le code 2FA est valide
         if totp_device.verify_token(token):
-            # Si le code est valide, redirige l'utilisateur vers une page de succès ou une autre page
-            return redirect('home')  # Par exemple, rediriger vers la page d'accueil
+            # Si le code est valide, redirige l'utilisateur vers la page d'accueil
+            return redirect('home')  # Remplace 'home' par le nom de l'URL de la page d'accueil
 
         # Si le code est invalide, affiche un message d'erreur
         return render(request, 'verify_2fa.html', {'error': 'Code invalide. Essayez à nouveau.'})
 
+    # Si la méthode est GET, afficher simplement le formulaire
     return render(request, 'verify_2fa.html')
 
 @login_required
