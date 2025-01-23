@@ -17,6 +17,10 @@ from io import BytesIO
 from django.core.files.storage import default_storage 
 from django.core.files.base import ContentFile
 from django.contrib import messages
+from django.http import JsonResponse
+from django.contrib.auth import authenticate, login 
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.decorators import login_required
 
 CLIENT_ID = config("INTRA_CLIENT_ID")
 CLIENT_SECRET = config("INTRA_CLIENT_SECRET")
@@ -27,53 +31,79 @@ def redirect_to_intra(request):
     intra_url = f"https://api.intra.42.fr/oauth/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code"
     return redirect(intra_url)
 
+def login_view(request):
+    if request.method == 'POST':
+        # Récupère le nom d'utilisateur et le mot de passe
+        username = request.POST.get('nickname')
+        password = request.POST.get('password')
+
+        # Utilise la fonction authenticate pour vérifier le nom d'utilisateur et le mot de passe
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            # Si l'utilisateur est authentifié, on le connecte et on le redirige vers /enable-2fa
+            login(request, user)
+            return redirect('enable_2fa')  # Redirige vers la page pour configurer 2FA
+        else:
+            # Si l'utilisateur ou le mot de passe est incorrect, on affiche un message d'erreur
+            messages.error(request, "Identifiants incorrects. Veuillez réessayer.")
+            return render(request, 'index.html')  # Redirige vers la page de login avec un message d'erreur
+
+    return render(request, 'index.html')
 
 @login_required
 def verify_2fa(request):
     if request.method == 'POST':
         token = request.POST.get('token')  # Le code 2FA entré par l'utilisateur
-        user = request.user  # L'utilisateur actuellement connecté
+        user = request.user  # L'utilisateur connecté
         
-        # Récupère l'appareil TOTP de l'utilisateur
-        totp_device = TOTPDevice.objects.get(user=user)
+        # Vérifie si l'utilisateur a un appareil TOTP
+        try:
+            totp_device = TOTPDevice.objects.get(user=user)
+        except TOTPDevice.DoesNotExist:
+            messages.error(request, "Aucun appareil 2FA trouvé.")
+            return redirect('enable_2fa')  # Redirige vers la page pour configurer 2FA si aucun appareil n'est trouvé
 
-        # Vérifie si le code 2FA est valide
+        # Vérifie le token
         if totp_device.verify_token(token):
-            # Si le code est valide, redirige l'utilisateur vers la page d'accueil
-            return redirect('home')  # Remplace 'home' par le nom de l'URL de la page d'accueil
+            # Si le token est valide, redirige vers la page de félicitations
+            return redirect('success_page')  # Remplace 'success_page' par le nom de l'URL de la page de félicitations
 
-        # Si le code est invalide, affiche un message d'erreur
-        return render(request, 'verify_2fa.html', {'error': 'Code invalide. Essayez à nouveau.'})
+        # Si le token est invalide
+        messages.error(request, "Code invalide. Essayez à nouveau.")
+        return render(request, 'verify_2fa.html')
 
-    # Si la méthode est GET, afficher simplement le formulaire
     return render(request, 'verify_2fa.html')
 
 @login_required
 def enable_2fa(request):
     user = request.user
-    # Crée ou récupère l'appareil TOTP de l'utilisateur
+    # Créer ou récupérer l'appareil TOTP de l'utilisateur
     totp_device, created = TOTPDevice.objects.get_or_create(user=user)
 
     # Obtenir l'URL pour générer le QR Code
     qr_url = totp_device.config_url  # L'URL du QR code
-    
-    # Générer l'image du QR code avec une taille plus grande
-    img = qrcode.make(qr_url, box_size=10, border=4)  # box_size plus grand pour améliorer la taille de l'image
 
-    # Sauvegarder l'image en mémoire
+    # Générer le QR code
+    img = qrcode.make(qr_url)
     img_io = BytesIO()
     img.save(img_io, 'PNG')
     img_io.seek(0)
 
-    # Créer un nom de fichier temporaire pour l'image
+    # Sauvegarder l'image du QR code dans le dossier MEDIA
     image_name = f'{user.username}_qrcode.png'
     file_path = default_storage.save(image_name, ContentFile(img_io.read()))
 
-    # Générer l'URL de l'image du QR code
+    # Générer l'URL pour l'image du QR code
     qr_image_url = default_storage.url(file_path)
 
     # Passer l'URL de l'image au template
     return render(request, 'enable_2fa.html', {'qr_image_url': qr_image_url})
+
+@login_required
+def success_page(request):
+    # Cette vue sera appelée après une connexion réussie
+    return render(request, 'success_page.html')
 
 
 class UserListCreate(generics.ListCreateAPIView):
@@ -107,40 +137,29 @@ class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 	lookup_field = "pk"
 
 class CheckDataView(View):
-	def get(self, request):
-		# Cas 1 : Retour d'Intra 42 avec OAuth (GET avec un code)
-		code = request.GET.get("code")
-		if code:
-			# Échanger le code contre un token d'accès
-			token_url = "https://api.intra.42.fr/oauth/token"
-			data = {
-				"grant_type": "authorization_code",
-				"client_id": CLIENT_ID,
-				"client_secret": CLIENT_SECRET,
-				"code": code,
-				"redirect_uri": REDIRECT_URI,
-			}
-			response = requests.post(token_url, data=data)
-			if response.status_code == 200:
-				access_token = response.json().get("access_token")
-				return JsonResponse({"status": "success", "message": "Connexion via Intra réussie", "token": access_token})
-			else:
-				return JsonResponse({"status": "error", "message": "Échec de la connexion via Intra"})
-		else:
-			return JsonResponse({"status": "error", "message": "Code OAuth manquant"})
+    def get(self, request):
+        # Cette vue peut gérer une connexion OAuth ou retourner un message de connexion réussie
+        code = request.GET.get("code")
+        if code:
+            # Traitement pour l'OAuth
+            return JsonResponse({"status": "success", "message": "Connexion réussie avec OAuth"})
+        
+        # Si la vérification échoue
+        return JsonResponse({"status": "error", "message": "Échec de la connexion"})
 
-	def post(self, request):
-		# Cas 2 : Connexion normale via formulaire
-		nickname = request.POST.get('nickname')
-		password = request.POST.get('password')
-		try:
-			user = User.objects.get(nickname=nickname)
-			if user.password == password:  # À sécuriser avec un hachage
-				return JsonResponse({"status": "success", "message": "Connexion réussie"})
-			else:
-				return JsonResponse({"status": "error", "message": "Mot de passe incorrect"})
-		except User.DoesNotExist:
-			return JsonResponse({"status": "error", "message": "Utilisateur introuvable"})
+    def post(self, request):
+        # Traitement de la connexion via formulaire
+        nickname = request.POST.get('nickname')
+        password = request.POST.get('password')
+        
+        try:
+            user = User.objects.get(nickname=nickname)
+            if user.check_password(password):  # Utilisation de la méthode check_password() pour vérifier le mot de passe
+                return JsonResponse({"status": "success", "message": "Connexion réussie"})
+            else:
+                return JsonResponse({"status": "error", "message": "Mot de passe incorrect"})
+        except User.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Utilisateur introuvable"})
 
 def index(request):
 	current_language = get_language()  # Récupère la langue active

@@ -10,6 +10,8 @@ urlpatterns = [
 	path('admin/', admin.site.urls),
 	path('api/', include('api.urls')),
 	path('accounts/', include('django.contrib.auth.urls')),
+	path('login/', views.login_view, name='login_view'),
+	path('success/', views.success_page, name='success_page'),
 	path('enable-2fa/', views.enable_2fa, name='enable_2fa'),
     path('verify-2fa/', views.verify_2fa, name='verify_2fa'),
 	path('i18n/', include('django.conf.urls.i18n')),
